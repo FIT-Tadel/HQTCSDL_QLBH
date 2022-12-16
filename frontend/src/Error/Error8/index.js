@@ -86,10 +86,6 @@ import Error8NF from './Error/Error8/Error8NF';
 import TaiXe1NF8 from './Error/Error8/TaiXe1NF8';
 import TaiXe2NF8 from './Error/Error8/TaiXe2NF8';
 
-import Error8F from './Error/Error8/Error8F';
-import TaiXe1F8 from './Error/Error8/TaiXe1F8';
-import TaiXe2F8 from './Error/Error8/TaiXe2F8';
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
@@ -177,10 +173,6 @@ root.render(
           <Route path='error8/error8_nf' element={<Error8NF />}/>
           <Route path='error8/error8_nf/driver1_nf' element={<TaiXe1NF8 />}/>
           <Route path='error8/error8_nf/driver2_nf' element={<TaiXe2NF8 />}/>
-
-          <Route path='error8/error8_f' element={<Error8F />}/>
-          <Route path='error8/error8_f/driver1_f' element={<TaiXe1F8 />}/>
-          <Route path='error8/error8_f/driver2_f' element={<TaiXe2F8 />}/>
       </Routes>
   </BrowserRouter>
   </React.StrictMode>
