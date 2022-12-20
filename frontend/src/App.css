@@ -1,0 +1,33 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 100px auto;
+}
+
+.App-login{
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-evenly;
+  align-items: center;
+  margin: 20px auto;
+  height: 200px;
+  width: 300px;
+  border-radius: 10px;
+  background-color: #5ffbb2;
+  border: 2px solid rgba(53, 53, 53, 0.36);
+}
+
+.App-login:hover{
+  background-color: #42e19780;
+}
+
+.App-login-text{
+  font-size: 20px;
+}
+
+.App-login-icon{
+  font-size: 40px;
+}
