@@ -13,7 +13,7 @@ const Items = [
     {
         "id": 2,
         "linkImg" : "../../public/default.jpg",
-        "foodName": "Cơm tấm",
+        "foodName": "Cơm gà",
         "description": "abcd xyzt mnop",
         "judge": "verygood",
         "price": "10 000",
@@ -22,7 +22,7 @@ const Items = [
     {
         "id": 3,
         "linkImg" : "../../public/default.jpg",
-        "foodName": "Cơm tấm",
+        "foodName": "Cháo",
         "description": "abcd xyzt mnop",
         "judge": "verygood",
         "price": "10 000",
