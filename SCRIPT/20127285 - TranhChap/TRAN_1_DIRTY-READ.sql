@@ -1,0 +1,4 @@
+﻿use QLBH
+GO
+
+EXEC CAP_NHAT_CT_DON_HANG  'FU889072',N'Bánh mì thịt', 5, 1

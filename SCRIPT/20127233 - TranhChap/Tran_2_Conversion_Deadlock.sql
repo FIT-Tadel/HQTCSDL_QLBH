@@ -1,0 +1,5 @@
+﻿USE QLBH
+GO
+EXEC TX_Nhan_DonHang_Fixed 'V7R-4X4', 'SE617257'
+
+

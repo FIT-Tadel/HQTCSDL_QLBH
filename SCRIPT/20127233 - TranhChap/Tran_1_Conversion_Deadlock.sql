@@ -1,0 +1,7 @@
+﻿USE QLBH
+GO
+EXEC TX_Nhan_DonHang_Fixed 'X7P-1B8', 'SE617257'
+
+-- SELECT * FROM DONHANG
+-- Reset state don hang
+-- UPDATE DONHANG set TINHTRANG = N'Chờ Nhận', MATAIXE = null WHERE MADH = 'SE617257'
