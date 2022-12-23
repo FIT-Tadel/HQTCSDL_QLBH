@@ -41,6 +41,19 @@ async function getDonHang(maDH) {
     }
 }
 
+async function getMonAnThucDon(maTD) {
+    try {
+        let pool = await sql.connect(config);
+        let product = await pool.request()
+            .input('maTD', sql.Char, maTD)
+            .query("SELECT * FROM THUCDON WHERE MATHUCDON = @maTD");
+        return product.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 // ============= TranhChap ==================
 //Lost Update
 async function TX_NhanDon_error(maTX, maDH) {
