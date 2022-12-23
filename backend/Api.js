@@ -8,6 +8,9 @@ var cors = require('cors');
 var app = express();
 var router = express.Router();
 
+
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
@@ -34,7 +37,23 @@ router.route('/DSMonAn').get((request,response)=>{
 
 })
 
-router.route('/MonAn/:tenmon').get((request,response)=>{
+router.route('/donhang/:madh').get((request,response)=>{
+
+   dboperations.getDonHang(request.params.madh).then(result => {
+      response.json(result[0]);
+   })
+
+})
+
+router.route('/thucdon/:matd').get((request,response)=>{
+
+   dboperations.getMonAnThucDon(request.params.matd).then(result => {
+      response.json(result[0]);
+   })
+
+})
+
+router.route('/MonAn/:tenmon').put((request,response)=>{
 
     dboperations.getMonAn(request.params.tenmon).then(result => {
        response.json(result[0]);

@@ -1,27 +1,57 @@
 import React from 'react'
 import $ from 'jquery';
-import Items from './item';
+import { useState, useEffect } from 'react';
+import apiCaller from '../../utils/apiCaller';
+
 export default function KhachHangF1() {
   
-  function test(data){
-    
-    const test= document.getElementById('madh').value
-    console.log(test)
+  const [list,setList]=useState([])
+  const [url,setUrl]=useState('')
+
+  useEffect(()=>{
+
+    apiCaller(url,'PUT',null).then(res=>{
+      setList(res.data)
+    })
+
+  },[url])
+
+  function Handle(){
+
+    var donhang= {list};
+    const madh= document.getElementById('madh').value
+    console.log(madh)
+
+    setUrl(`HuyDon_fixed/${madh}`)
+
+
+  }
+
+  function HandleLoad(){
+
+    var thongbao = document.getElementById('thongbao')
+    thongbao.innerHTML='Hủy đơn thất bại'
+
+    var donhang= {list};
+    const madh= document.getElementById('madh').value
+    console.log(madh)
+
+    setUrl(`donhang/${madh}`)
+
+    console.log(donhang.list[0])
     
     var table = document.getElementById('myTable')
-    for(var i=0;i<data.length;i++){
-      let check = test.localeCompare(data[i].foodName)
-      if(check===0){
+    table.innerHTML=''
+    for(var i=0;i<donhang.list.length;i++){
         var row=`<tr>
-                    <td>${data[i].foodName} </td>
-                    <td>${data[i].description} </td>
-                    <td>${data[i].judge} </td>
+                    <td>${donhang.list[i].MADH} </td>
+                    <td>${donhang.list[i].MADOITAC} </td>
+                    <td>${donhang.list[i].MATAIXE} </td>
+                    <td>${donhang.list[i].MAKH} </td>
+                    <td>${donhang.list[i].TINHTRANG} </td>
                 </tr>`
         table.innerHTML+=row
-      }
     }
-
-    
   }
   return (
     <div>
@@ -30,14 +60,17 @@ export default function KhachHangF1() {
        minlength="4" maxlength="30" size="10" className='error-lable'/>
 
       
-      <input type="submit" name="" value="Submit" className='error-lable' onClick={()=> test(Items)}/>
-
+      <input type="submit" name="" value="Submit" className='error-lable' onClick={()=> Handle()}/>
+      <input type="submit" name="" value="Load data" className='error-lable' onClick={()=> HandleLoad()}/>
+      <p id='thongbao'></p>
       <table className='table table-striped'>
         <thead>
           <tr className='bg-info'>
-            <th>Food name</th>
-            <th>Description</th>
-            <th>Judge</th>
+            <th>MADH</th>
+            <th>MADT</th>
+            <th>MATAIXE</th>
+            <th>MAKH</th>
+            <th>TINHTRANG</th>
 
           </tr>
         </thead>

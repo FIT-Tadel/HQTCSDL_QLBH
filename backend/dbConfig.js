@@ -1,7 +1,7 @@
 const config = {
     server: 'localhost',
     user: 'sa',
-    password: '',
+    password: '123',
     database: 'QLBH',
     trustServerCertificate: true
 }
