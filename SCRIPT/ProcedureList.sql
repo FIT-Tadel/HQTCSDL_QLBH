@@ -1,9 +1,34 @@
 ﻿-- This file will be updated weekly by Group02
 
-use QLBH
+use QLBH_ADB
 go
 
 -- < Role: KHACH HANG >
+
+--xem danh sach doi tac
+DROP procedure IF EXISTS kh_xem_ds_doitac
+go
+create PROCEDURE kh_xem_ds_doitac AS
+BEGIN
+	select * from DOITAC
+end
+go
+
+
+--xem cac don hang cua minh---
+DROP procedure IF EXISTS kh_thongtin_donhang
+go
+create PROCEDURE kh_thongtin_donhang (@makh char(8))
+AS
+BEGIN
+	select * from DONHANG where MAKH=@makh
+end
+GO
+
+--EXEC kh_thongtin_donhang 'KH146664'
+
+
+
 ---- Xem thong tin cac mon an cua doi tac ----
 DROP procedure IF EXISTS kh_xem_doi_tac
 go
@@ -17,11 +42,14 @@ begin TRAN
         return 
     end
 
-    select distinct(ma.TENMON), ma.MOTA, ma.GIA, ma.TINHTRANGMON
+    select ma.TENMON, ma.MOTA, ma.GIA, ma.TINHTRANGMON, ma.MATHUCDON
     from MONAN ma, THUCDON td
     where ma.MATHUCDON=td.MATHUCDON and td.MADOITAC=@madoitac
 COMMIT TRAN
 go
+
+-- select * from DOITAC
+-- exec kh_xem_doi_tac'DT690892'
 
 
 
@@ -34,11 +62,15 @@ begin TRAN
     BEGIN
         print'Ma tai xe khong ton tai'
         ROLLBACK TRAN
+		return
     end
 
     select HOTEN, SDT, DIACHI, BIENSOXE from TAIXE where MATAIXE=@mataixe
 COMMIT tran
 go
+
+-- select * from TAIXE
+-- exec kh_xem_tt_tai_xe 'W9F-6F8 '
 
 ---- Xem chi tiet don hang ----
 DROP procedure IF EXISTS kh_xem_ct_don_hang
@@ -49,30 +81,56 @@ begin TRAN
     BEGIN
         print'Don hang khong ton tai'
         ROLLBACK TRAN
+		return
     end
 
     select * from CT_DONHANG where MADH=@madonhang
 COMMIT tran
 go
 
+-- select * from DONHANG
+-- EXEC kh_xem_ct_don_hang 'LW79085'
+
 ---- Tao don hang ----
 DROP procedure IF EXISTS kh_tao_don_hang
 go
-create PROCEDURE kh_tao_don_hang(@madonhang char(8), @madoitac char(8), @mataixe char(8),
- @makh char(8),@diachigh char(100)) AS
+create PROCEDURE kh_tao_don_hang(@madonhang char(8), @madoitac char(8),
+ @makh char(8)) AS
  BEGIN TRAN
     begin TRY
+		if exists (select * from DONHANG where MADH=@madonhang)
+		BEGIN
+			print N'Đơn hàng đã tồn tại'
+			ROLLBACK TRAN
+			return
+    	end
+
+		if not exists (select * from DOITAC where MADOITAC=@madoitac)
+		BEGIN
+			print N'Mã đối tác không tồn tại'
+			ROLLBACK TRAN
+			return
+    	end
+
         DECLARE @sdt char(12) = (select SDT from KHACHHANG where MAKH=@makh)
         INSERT into DONHANG
-        VALUES(@madonhang, @madoitac,null,@mataixe,@makh,GETDATE(), @diachigh,@sdt,null,null,N'Đang xử lý')
-
+        VALUES(@madonhang, @madoitac,null,@makh,GETDATE(),@sdt,null,null,N'Chờ nhận')
+	
+		PRINT N'Thêm đơn hàng thành công'
     end try
+
     begin catch 
+		PRINT N'Thêm đơn hàng thất bại'
         ROLLBACK TRAN
         return
     end CATCH
  COMMIT TRAN
  go
+
+-- select * from DOITAC
+-- select * from KHACHHANG
+-- select * from DONHANG WHERE MADH='12345678'
+-- EXEC kh_tao_don_hang'12345678','LWKHBG','O6P-6T6'
 
 
 ---- Huy don hang ----
@@ -81,16 +139,17 @@ go
 create PROCEDURE kh_huy_don_hang (@madh char(8))AS
 BEGIN TRAN
     begin TRY
-        if exists (select * from DONHANG where MADH=@madh and TINHTRANG='dang xu ly')
+        if exists (select * from DONHANG 
+        where MADH=@madh and TINHTRANG=N'Chờ nhận')
         BEGIN
-            update DONHANG set TINHTRANG='da huy' where MADH=@madh
+            update DONHANG set TINHTRANG=N'Bị hủy' where MADH=@madh
             PRINT'Huy don thanh cong'
             commit TRAN
             return 
         END
 
         print 'Huy don that bai'
-        COMMIT TRAN
+        ROLLBACK TRAN
         RETURN
     end try
 
@@ -99,8 +158,62 @@ BEGIN TRAN
 		ROLLBACK TRANSACTION
 		RETURN
     END CATCH
-
 go
+
+-- select * FROM DONHANG
+-- EXEC kh_huy_don_hang '12345678'
+
+--- Them mon an vao don hang da duoc tao ---
+DROP procedure IF EXISTS kh_them_monan_ctdonhang
+go
+create PROCEDURE kh_them_monan_ctdonhang (@tenmon nvarchar(80),@madh char(8), @soluongmon int) AS
+BEGIN TRAN
+	begin TRY
+		if not exists (select * from DONHANG where MADH=@madh)
+		begin
+			print N'Đơn hàng không tồn tại'
+			ROLLBACK TRAN
+			RETURN
+		END
+
+		IF not exists (select * from MONAN ma 
+		JOIN THUCDON td ON ma.MATHUCDON=td.MATHUCDON 
+		join DOITAC dt on td.MADOITAC=dt.MADOITAC 
+		where ma.TENMON=@tenmon)
+		begin
+			print N'Món ăn không tồn tại'
+			ROLLBACK TRAN
+			RETURN
+		END
+
+		if exists (select * from CT_DONHANG where MADH=@madh and TENMON=@tenmon)
+		begin
+			print N'Món ăn đã tồn tại trong đơn hàng'
+			ROLLBACK TRAN
+			RETURN
+		END
+
+		insert into CT_DONHANG values (@madh,@tenmon,@soluongmon)
+		PRINT N'Thêm món thành công'
+		COMMIT TRAN
+		RETURN
+
+		
+	end try
+
+	begin CATCH
+		PRINT N'Thêm món thất bại'
+		ROLLBACK TRANSACTION
+		RETURN
+	end CATCH
+COMMIT TRAN
+GO
+
+
+-- select * from DONHANG
+-- insert into MONAN VALUES (N'Bánh xèo',1,null,300,null)
+-- EXEC kh_them_monan_ctdonhang N'Bánh xèo','DH928651',4
+-- select * from CT_DONHANG where TENMON= N'Bánh xèo' and MADH='DH928651'
 
 --> < Role: Tai Xe >
 ------ Tai Xe -------
@@ -123,7 +236,7 @@ AS
 		FROM DONHANG
 			INNER JOIN KHACHHANG ON KHACHHANG.MAKH = DONHANG.MAKH
 			INNER JOIN DOITAC ON DONHANG.MADOITAC = DOITAC.MADOITAC
-		WHERE DIACHI LIKE '%' + @khu_hd + '%' AND TINHTRANG = N'Chờ Nhận'
+		WHERE DIACHI LIKE '%' + @khu_hd + '%' AND TINHTRANG = N'Chờ nhận'
 
 		IF(@@ROWCOUNT = 0)
 			BEGIN
@@ -132,6 +245,9 @@ AS
 			END
 	END
 GO
+
+
+
 
 ------ Nhan Don Hang -----
 DROP PROC IF EXISTS Nhan_DonHang
@@ -178,15 +294,29 @@ AS
 	END
 GO
 
+--giao thanh cong don hang
+DROP PROC IF EXISTS tx_giao_thanhcong_donhang
+Go
+CREATE PROC tx_giao_thanhcong_donhang (@madh char(8))
+AS
+BEGIN
+	UPDATE DONHANG
+	set TINHTRANG=N'Đã nhận'
+	where MADH=@madh
+end
+
+
+
 --> < Role: Nhan Vien >
 ---- Duyet Hop Dong ----
 DROP PROC IF EXISTS Duyet_Hop_Dong
 GO
-CREATE PROC Duyet_Hop_Dong @ma_HD char(8), @ma_DT char(8), @nguoi_lap nvarchar(50), @ma_sothue char(8),
-								  @so_chi_nhanhDK int, @stk_NH char(10), @chiNhanh_NH nvarchar(30), @phi_hoa_hong float, 
-								  @tg_hieu_luc datetime
+CREATE PROC Duyet_Hop_Dong(@ma_HD char(8), @ma_DT char(8), @nguoi_lap nvarchar(50), @ma_sothue char(8),
+								  @so_chi_nhanhDK int, @stk_NH char(10), @chiNhanh_NH nvarchar(30), @phi_hoa_hong float) 
+
 AS
 	BEGIN
+		declare @tg_hieu_luc date = GETDATE()
 		IF(@tg_hieu_luc < GETDATE())
 			BEGIN
 			Print(N'Thời gian hiệu lực của hợp đồng chưa được kích hoạt!')
@@ -503,3 +633,99 @@ GO
 
 
 
+--rang buoc
+
+--DiemDanhGiaTX (TaiXe) phải được tính 
+--từ trung bình của DanhGiaDonHang (CT_DanhGia)
+DROP PROC IF EXISTS diem_danh_gia_taixe
+GO
+Create procedure diem_danh_gia_taixe @mataixe char(8) AS
+BEGIN
+	declare @tongdiem int = (select sum(DANHGIATAIXE) from CT_DANHGIA where MATAIXE=@mataixe)
+	declare @sodanhgia int = (select count(*) from CT_DANHGIA where MATAIXE=@mataixe)
+	declare @diemtb int = @tongdiem/@sodanhgia
+
+	update TAIXE 
+	set DIEMDANHGIATX=@diemtb
+	where MATAIXE=@mataixe
+end
+GO
+
+-- ThuNhapTX (TaiXe) phải bằng tổng PhiVanChuyen (DonHang) mà TaiXe thực 
+-- hiện
+DROP PROC IF EXISTS thu_nhap_taixe
+GO
+Create procedure thu_nhap_taixe @mataixe char (8) AS
+begin
+	declare @thunhap float = (select sum(PHIVANCHUYEN) from DONHANG where MATAIXE=@mataixe) 
+	UPDATE TAIXE
+	set THUNHAPTX=@thunhap
+	where MATAIXE=@mataixe
+end
+GO
+
+-- DoanhThu (Doitac) bằng 80% tổng TongTienMonAn (DonHang) do 20% phí cho 
+-- hệ thống, thuộc về DoiTac đó
+
+DROP PROC IF EXISTS doanh_thu_doitac
+GO
+Create procedure doanh_thu_doitac @madt char(8) AS
+BEGIN
+	declare @doanhthu float = (select SUM(TONGTIEN) from DONHANG where MADOITAC=@madt)
+	declare @doanhthu_thucte float = @doanhthu * 0.8
+
+	UPDATE DOITAC
+	set DOANHTHU = @doanhthu_thucte
+	where MADOITAC=@madt
+end
+go
+
+
+-- TongTienMonAn (DonHang) bằng tổng của các Gia (MonAn) nhân với SoLuong 
+-- (CT_DonHang) của TenMon (MonAn) đó
+DROP PROC IF EXISTS tongtien_donhang
+GO
+Create procedure tongtien_donhang @madh char(8) AS
+BEGIN
+	declare @tongtien float = (select SUM(ma.GIA * ctdh.SOLUONGMON) from CT_DONHANG ctdh, MONAN ma where ctdh.MADH = @madh and ma.TENMON= ctdh.TENMON)
+	
+	UPDATE DONHANG
+	SET TONGTIEN=@tongtien
+	where MADH=@madh
+end
+GO
+
+--> < Role: Doi tac >
+DROP PROC IF EXISTS dt_xem_donhang
+GO
+Create procedure dt_xem_donhang (@madt char(8))AS
+BEGIN
+	select * from DONHANG where MADOITAC=@madt
+END
+go
+
+
+--Them thuc don moi 
+DROP PROC IF EXISTS dt_them_thucdon
+GO
+Create procedure dt_them_thucdon (@matd int, @madt char(8))
+AS
+BEGIN
+	insert into THUCDON VALUES(@matd,@madt,null)
+end
+go
+
+
+DROP PROC IF EXISTS dt_them_monan
+GO
+Create procedure dt_them_monan (@tenma nvarchar(80),@matd int, @gia float) AS
+BEGIN
+	insert into MONAN(TENMON,MATHUCDON,GIA) VALUES(@tenma,@matd,@gia)
+END
+go
+
+
+
+--INDEX
+create NONCLUSTERED INDEX NI_DH_MADH_MAKH on DONHANG(MADH,MAKH)
+create NONCLUSTERED INDEX NI_DH_MADH_MADT on DONHANG(MADH,MADOITAC)
