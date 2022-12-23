@@ -1,5 +1,5 @@
 var Db  = require('./dbOperations');
-var ThemMonAn = require('./MonAn');
+var MonAn = require('./MonAn');
 const dboperations = require('./dbOperations');
 
 var express = require('express');
@@ -42,7 +42,8 @@ router.route('/MonAn/:tenmon').get((request,response)=>{
 
 })
 
-//Lost Update
+
+//Lỗi 1 - Lost Update
 router.route('/TXNhanDon_error/:maTX/:maDH').put((request,response)=>{
    dboperations.TX_NhanDon_error(request.params.maTX, request.params.maDH).then(result => {
       response.json(result[0]);
@@ -67,7 +68,8 @@ router.route('/HuyDon_fixed/:maDH').put((request,response)=>{
    })
 })
 
-//Dirty Read
+
+//Lỗi 2 - Dirty Read
 router.route('/DTUpdateTD/:mathucdon/:tenmon/:gia').put((request,response)=>{
    dboperations.DT_UpdateThucDon(request.params.mathucdon, request.params.tenmon, request.params.gia).then(result => {
       response.json(result);
@@ -88,7 +90,8 @@ router.route('/KH_XemTD_fixed/:madoitac/:mathucdon').get((request,response)=> {
    })
 })
 
-//Phantom Read
+
+//Lỗi 3 - Phantom Read
 router.route('/KH_DangXemTD/:mathucdon').get((request,response)=>{
    dboperations.KH_DangXemThucDon(request.params.mathucdon).then(result => {
       response.json(result[0]);
@@ -104,14 +107,15 @@ router.route('/KH_DangXemTD_fixed/:mathucdon').get((request,response)=> {
 
 router.route('/ThemMonAn').post((request,response)=> {
 
-   monan = {...request.body}
+   MonAn = {...request.body}
 
-   dboperations.DT_ThemMonAn(monan).then(result => {
-      response.status(201).json(result);
+   dboperations.DT_ThemMonAn(MonAn).then(result => {
+      response.json(result[0]);
    })
 })
 
-//Cycle Deadlock
+
+//Lỗi 4 - Cycle Deadlock
 router.route('/DT_CapNhat_CH_DH/:maDH/:machinhanh/:tinhtrangCH/:tinhtrangDH').put((request,response)=> {
 
    dboperations.DT_CapNhat_CH_DH(
@@ -137,6 +141,97 @@ router.route('/TX_NhanDon_XemTTCH/:maDH/:mataixe').put((request,response)=> {
    dboperations.TX_NhanDon_XemTTCH(request.params.maDH, request.params.mataixe).then(result => {
       if(result[0].length === 0)
          response.json("Nhận đơn thành công! Không tìm thấy cửa hàng nào đang hoạt động ở khu vực bạn!")
+      else response.json(result[0]);
+   })
+})
+
+
+//Lỗi 5 - Unrepeatable Read
+router.route('/KH_Xem_MonAn/:mathucdon/:tenmon').get((request,response)=> {
+
+   dboperations.KH_Xem_MonAn(request.params.mathucdon, request.params.tenmon).then(result => {
+      if(result[0].length === 0)
+         response.json("Món ăn không tồn tại trong thực đơn!")
+      else response.json(result[0]);
+   })
+})
+
+router.route('/KH_Xem_MonAn_fixed/:mathucdon/:tenmon').get((request,response)=> {
+
+   dboperations.KH_Xem_MonAn_fixed(request.params.mathucdon, request.params.tenmon).then(result => {
+      if(result[0].length === 0)
+         response.json("Món ăn không tồn tại trong thực đơn!")
+      else response.json(result[0]);
+   })
+})
+
+router.route('/Xoa_Mon_An/:mathucdon/:tenmon').delete((request,response)=> {
+
+   dboperations.CuaHang_Xoa_MonAn(request.params.mathucdon, request.params.tenmon).then(result => {
+      if(result === undefined)
+         response.json("Xóa món ăn thất bại!");
+      else response.json("Xóa món ăn thành công!");
+   })
+})
+
+
+//Lỗi 6 - Conversion Deadlock
+router.route('/Update_TT_Mon/:tenmon/:mathucdon/:trangthai').put((request,response)=> {
+
+   dboperations.Update_TrangThai_Mon(request.params.tenmon, request.params.mathucdon, request.params.trangthai).then(result => {
+      if(result === undefined)
+         response.json("Đang có nhân viên khác cập nhật tình trạng món ăn này!")
+      else response.json(result[0]);
+   })
+})
+
+router.route('/Update_TT_Mon_fixed/:tenmon/:mathucdon/:trangthai').put((request,response)=> {
+
+   dboperations.Update_TrangThai_Mon_fixed(request.params.tenmon, request.params.mathucdon, request.params.trangthai).then(result => {
+      response.json(result[0]);
+   })
+})
+
+
+
+//Lỗi 7 - Dirty Read
+router.route('/Xem_CT_DonHang/:maDH/:tenmon').get((request,response)=> {
+
+   dboperations.Xem_CT_DonHang(request.params.maDH, request.params.tenmon).then(result => {
+      response.json(result[0]);
+   })
+})
+
+router.route('/Xem_CT_DonHang_fixed/:maDH/:tenmon').get((request,response)=> {
+
+   dboperations.Xem_CT_DonHang_fixed(request.params.maDH, request.params.tenmon).then(result => {
+      response.json(result[0]);
+   })
+})
+
+router.route('/Update_CT_DonHang/:maDH/:tenmon/:soluong').put((request,response)=> {
+
+   dboperations.Update_CT_DonHang(request.params.maDH, request.params.tenmon, request.params.soluong).then(result => {
+      response.json(result[0]);
+   })
+})
+
+
+//Lỗi 8 - Conversion Deadlock
+router.route('/TX_Nhan_DonHang/:mataixe/:maDH').put((request,response)=> {
+
+   dboperations.TX_Nhan_DonHang(request.params.mataixe, request.params.maDH).then(result => {
+      if(result === undefined)
+         response.json("Đơn hàng đã có tài xế khác tiếp nhận!")
+      else response.json(result[0]);
+   })
+})
+
+router.route('/TX_Nhan_DonHang_fixed/:mataixe/:maDH').put((request,response)=> {
+
+   dboperations.TX_Nhan_DonHang_fixed(request.params.mataixe, request.params.maDH).then(result => {
+      if(result === undefined)
+         response.json("Đơn hàng đã có tài xế khác tiếp nhận!")
       else response.json(result[0]);
    })
 })
