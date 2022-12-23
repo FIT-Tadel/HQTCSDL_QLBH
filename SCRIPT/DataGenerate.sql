@@ -40,7 +40,8 @@ VALUES
   (N'Cơm sườn chua ngọt',7, N'Tốt rẻ',57505, N'Hết hàng',9),
   (N'Bánh mì chả',8, N'Tốt rẻ',95802, N'Hết hàng',10),
   (N'Hủ tíu',9, N'Tốt rẻ',44443, N'Còn',7),
-  (N'Mì ý',10, N'Tốt rẻ',71791,N'Còn',9);
+  (N'Mì ý',10, N'Tốt rẻ',71791,N'Còn',9),
+  (N'Bún bò',1,N'ngon',12345,N'còn',9);
 
 INSERT INTO TUYCHON
 VALUES
