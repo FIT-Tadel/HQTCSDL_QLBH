@@ -1,0 +1,6 @@
+﻿use QLBH
+GO
+
+EXEC DOC_CT_DH 'FU889072', N'Bánh mì thịt' 
+
+--SELECT * FROM CT_DONHANG

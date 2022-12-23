@@ -1,0 +1,1 @@
+﻿EXEC Xoa_Mon_an 2,  N'Cơm chiên'

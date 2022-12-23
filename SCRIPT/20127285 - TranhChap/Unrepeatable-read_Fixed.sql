@@ -1,0 +1,36 @@
+﻿use QLBH
+GO
+
+--Giao tác 1: Khách hàng đọc món ăn
+DROP PROC IF EXISTS Coi_Mon_An_Fixed
+GO
+CREATE procedure Coi_Mon_An_Fixed
+@matd int,
+@tenmon nvarchar(80)
+AS
+	BEGIN TRAN
+		BEGIN TRY			
+			IF NOT EXISTS (SELECT * 
+						   FROM THUCDON WITH (TABLOCK, XLOCK)
+						   WHERE MATHUCDON = @matd)
+				BEGIN
+					RAISERROR('THUC DON KHONG TON TAI',16,1)
+					ROLLBACK TRAN
+				END
+
+			WAITFOR DELAY '0:0:05'
+		END TRY
+
+		BEGIN CATCH
+			RAISERROR('KHONG DOC DUOC',16,1)
+			ROLLBACK TRAN
+		END CATCH 
+
+		BEGIN
+			SELECT *
+			FROM MONAN
+			WHERE MATHUCDON = @matd AND TENMON = @tenmon
+		END
+
+	COMMIT TRAN
+
