@@ -7,7 +7,7 @@ function Error1NF() {
         <Link to="user_nf">
             <button  className='App-login'>
                 <div className='App-login-text'> 
-                    Khach Hang
+                    Khách Hàng
                 </div>
                 <i className='App-login-icon fa-solid fa-users'></i>
           </button>
@@ -16,7 +16,7 @@ function Error1NF() {
         <Link to="driver_nf">  
           <button className='App-login'>
               <div className='App-login-text'> 
-                  Tài xế
+                  Tài Xế
               </div>
               <i className='App-login-icon fa-solid fa-motorcycle'></i>
           </button> 
