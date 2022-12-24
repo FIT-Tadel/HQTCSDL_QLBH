@@ -37,6 +37,13 @@ router.route('/DSMonAn').get((request,response)=>{
 
 })
 
+router.route('/ctdonghang/:madh/:tenmon').put((request,response)=>{
+
+   dboperations.getCTDonHang(request.params.madh,request.params.tenmon).then(result => {
+      response.json(result[0]);
+   })
+})
+
 router.route('/donhang/:madh').get((request,response)=>{
 
    dboperations.getDonHang(request.params.madh).then(result => {

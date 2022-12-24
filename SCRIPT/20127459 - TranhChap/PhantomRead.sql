@@ -15,9 +15,9 @@ BEGIN TRAN
 			ROLLBACK TRAN
 			RETURN 1
 			END
-		IF(NOT EXISTS(SELECT * FROM MONAN WHERE MATHUCDON = @ma_thuc_don AND TINHTRANGMON = N'Đang bán')) 
+		IF(NOT EXISTS(SELECT * FROM MONAN WHERE MATHUCDON = @ma_thuc_don AND TINHTRANGMON = N'Còn')) 
 			BEGIN
-			Print(N'Thực đơn không có món nào đang bán!')
+			Print(N'Thực đơn không có món nào Còn!')
 			ROLLBACK TRAN
 			RETURN 1
 			END
@@ -26,7 +26,7 @@ BEGIN TRAN
 
 		SELECT TENMON, MOTA, GIA, TINHTRANGMON, DIEMDANHGIA
 		FROM MONAN
-		WHERE MATHUCDON = @ma_thuc_don AND TINHTRANGMON = N'Đang bán'
+		WHERE MATHUCDON = @ma_thuc_don AND TINHTRANGMON = N'Còn'
 
 	END TRY
 	BEGIN CATCH

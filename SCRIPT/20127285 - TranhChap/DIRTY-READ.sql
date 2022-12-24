@@ -1,5 +1,8 @@
 ﻿--DIRTY READ: Khach Cap Nhat CTDH nhung thay doi lai, CuaHang doc CT_DH truoc luc thay doi
 --DROP PROC CAP_NHAT_CT_DON_HANG
+use QLBH
+go
+
 DROP PROC IF EXISTS CAP_NHAT_CT_DON_HANG
 GO
 CREATE PROCEDURE CAP_NHAT_CT_DON_HANG

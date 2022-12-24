@@ -13,7 +13,6 @@ function KhachHangNF2() {
 
     apiCaller(url,'GET',null).then(res=>{
       setList(res.data);
-      console.log('123')
     })
 
   },[count])
