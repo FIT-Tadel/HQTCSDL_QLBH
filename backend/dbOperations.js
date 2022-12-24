@@ -45,7 +45,22 @@ async function getMonAnThucDon(maTD) {
         let pool = await sql.connect(config);
         let product = await pool.request()
             .input('maTD', sql.Char, maTD)
-            .query("SELECT * FROM THUCDON WHERE MATHUCDON = @maTD");
+            .query("SELECT * FROM MONAN WHERE MATHUCDON = @maTD");
+        return product.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+async function getCTDonHang(maDH, tenmon) {
+    try {
+        let pool = await sql.connect(config);
+        let product = await pool.request()
+            .input('maDH', sql.Char, maDH)
+            .input('tenmon', sql.NVarChar, tenmon)
+            .query("select * from CT_DONHANG where MADH=@maDH and TENMON=@tenmon");
         return product.recordsets;
     }
     catch (error) {
@@ -418,6 +433,8 @@ async function TX_Nhan_DonHang_fixed(mataixe, maDH) {
 
 
 module.exports = {
+    getCTDonHang : getCTDonHang,
+    getMonAnThucDon: getMonAnThucDon,
     getDSMonAn: getDSMonAn,
     getMonAn : getMonAn,
     getDonHang: getDonHang,

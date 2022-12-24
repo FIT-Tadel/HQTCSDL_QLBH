@@ -31,8 +31,6 @@ function DoiTacNF2() {
 
     setUrl(`DTUpdateTD/${matd}/${tenmon}/${gia}`)
 
-
-
   }
 
   function HandleLoad(){
