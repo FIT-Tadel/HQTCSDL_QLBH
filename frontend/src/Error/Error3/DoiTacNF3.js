@@ -36,23 +36,29 @@ function DoiTacNF3() {
 
     const tinhtrang= document.getElementById('tinhtrang').value
 
-    const diem = 9
+    // const diem = 9
 
+    //   var ctmon={
+    //     "TENMON" : 'Mì xào bò',
+    //     "MATHUCDON": 10,
+    //     "MOTA": "Ngon rẻ",
+    //     "GIA" : 45000,
+    //     "TINHTRANGMON" :  'Còn',
+    //     "DIEMDANHGIA" : 9 
+    // }
     var ctmon={
-      "TENMON" : 'Mì xào bò',
-      "MATHUCDON": 10,
-      "MOTA": "Ngon rẻ",
-      "GIA" : 45000,
-      "TINHTRANGMON" :  'Còn',
-      "DIEMDANHGIA" : 9 
-  }
+      "TENMON" : tenmon,
+      "MATHUCDON": matd,
+      "MOTA": mota,
+      "GIA" : gia,
+      "TINHTRANGMON" :  tinhtrang,
+      "DIEMDANHGIA" : 10
+    }
 
-  setUpdate(ctmon)
-  setCount(count+1)
-
+    setUpdate(ctmon)
+    setCount(count+1)
 
     setUrl(`ThemMonAn`)
-
 
   }
 
@@ -60,30 +66,31 @@ function DoiTacNF3() {
   return (
 
     <div>
+      <form autoComplete='on'> 
+          <label for="name" className='error-lable' autoComplete='on'>Nhập tên món ăn:</label>
+          <input type="text" id="tenmon" name="tenmon" required
+          minlength="4" maxlength="8" size="10" className='error-lable'/>
 
-      <label for="name" className='error-lable'>Nhập tên món ăn:</label>
-      <input type="text" id="tenmon" name="tenmon" required
-       minlength="4" maxlength="8" size="10" className='error-lable'/>
+          <label for="name" className='error-lable'>Nhập mã thực đơn:</label>
+          <input type="text" id="matd" name="matd" required
+          minlength="1" maxlength="8" size="10" className='error-lable'/>
 
-      <label for="name" className='error-lable'>Nhập mã thực đơn:</label>
-      <input type="text" id="matd" name="matd" required
-       minlength="4" maxlength="8" size="10" className='error-lable'/>
+          <label for="name" className='error-lable'>Nhập mô tả món ăn:</label>
+          <input type="text" id="mota" name="mota" required
+          minlength="4" maxlength="50" size="10" className='error-lable'/>
 
-      <label for="name" className='error-lable'>Nhập mô tả món ăn:</label>
-      <input type="text" id="mota" name="mota" required
-       minlength="4" maxlength="50" size="10" className='error-lable'/>
+          <label for="name" className='error-lable'>Nhập giá món ăn:</label>
+          <input type="text" id="gia" name="gia" required
+          minlength="4" maxlength="10" size="10" className='error-lable'/>
 
-      <label for="name" className='error-lable'>Nhập giá món ăn:</label>
-      <input type="text" id="gia" name="gia" required
-       minlength="4" maxlength="10" size="10" className='error-lable'/>
+          <label for="name" className='error-lable'>Nhập tình trạng món ăn:</label>
+          <input type="text" id="tinhtrang" name="tinhtrang" required
+          minlength="3" maxlength="30" size="10" className='error-lable'/>
+          
+          <input type="submit" name="" value="Submit" className='error-lable' onClick={()=> Handle()}/>
 
-      <label for="name" className='error-lable'>Nhập tình trạng món ăn:</label>
-      <input type="text" id="tinhtrang" name="tinhtrang" required
-       minlength="4" maxlength="30" size="10" className='error-lable'/>
-      
-      <input type="submit" name="" value="Submit" className='error-lable' onClick={()=> Handle()}/>
-
-      <p id='thongbao'></p>
+          <p id='thongbao'></p>
+      </form>
     </div>
 
   )

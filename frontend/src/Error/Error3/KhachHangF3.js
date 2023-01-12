@@ -36,7 +36,7 @@ function KhachHangF3() {
                     <td>${monan.list[i].TENMON} </td>
                     <td>${monan.list[i].MOTA} </td>
                     <td>${monan.list[i].GIA} </td>
-                    <td>${monan.list[i].TINHTRANG} </td>
+                    <td>${monan.list[i].TINHTRANGMON} </td>
                     <td>${monan.list[i].DIEMDANHGIA} </td>
                 </tr>`
         table.innerHTML+=row
@@ -64,7 +64,7 @@ function KhachHangF3() {
                     <td>${monan.list[i].TENMON} </td>
                     <td>${monan.list[i].MOTA} </td>
                     <td>${monan.list[i].GIA} </td>
-                    <td>${monan.list[i].TINHTRANG} </td>
+                    <td>${monan.list[i].TINHTRANGMON} </td>
                     <td>${monan.list[i].DIEMDANHGIA} </td>
                 </tr>`
         table.innerHTML+=row
